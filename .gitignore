@@ -26,3 +26,4 @@ ehthumbs.db
 # Ignore environment files
 .streamlit/secrets.toml
 *.env
+creds.json
