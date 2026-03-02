@@ -62,7 +62,10 @@ def init_connection():
         "https://www.googleapis.com/auth/drive",
     ]
     # 請確保您的 creds.json 檔案存在
-    creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+    creds_dict = st.secrets["gcp_service_account"]
+
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+    # creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
     client = gspread.authorize(creds)
     return client
 
