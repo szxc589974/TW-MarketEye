@@ -161,9 +161,9 @@ while True:
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>1.代號</th><th>2.名稱</th><th>3.成交價</th><th>4.漲跌(%)</th><th>4a.MA{day_a}差比</th>
-                        <th>5.MA{day_a}</th><th>6.天數A</th><th>7.MA{day_b}</th><th>8.天數B</th>
-                        <th>9.成交張數</th><th>10.量增比</th><th>11.日均量(張)</th><th>12.預估量(張)</th>
+                        <th>1.代號</th><th>2.名稱</th><th>3.成交價</th><th>4.漲跌(%)</th><th>5.線價比</th>
+                        <th>6.均線A</th><th>7.天數A</th><th>8.均線B</th><th>9.天數B</th>
+                        <th>10.成交張數</th><th>11.量增比</th><th>12.日均量(張)</th><th>13.預估量(張)</th>
                     </tr>
                 </thead>
                 <tbody>
