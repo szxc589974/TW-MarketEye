@@ -7,6 +7,10 @@ import requests
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 from streamlit_autorefresh import st_autorefresh
+import urllib3
+
+# 加上這行可以關閉「關閉驗證」後出現的警告訊息
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 # --- 0. 登入邏輯檢查 ---
@@ -180,15 +184,12 @@ def get_history_base(stock_no, max_count):
     now = datetime.now()
     current_date = now.replace(day=1)
     all_data = []
-    # 偽裝瀏覽器 Header，這對雲端執行至關重要
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
+
     while len(all_data) < max_count + 5:
         date_str = current_date.strftime("%Y%m%d")
         url = f"https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY?date={date_str}&stockNo={stock_no}&response=html"
         try:
-            resp = requests.get(url, timeout=10)
+            resp = requests.get(url, timeout=10, verify=False)
             soup = BeautifulSoup(resp.text, "html.parser")
             table = soup.find("table")
             if table:
@@ -207,7 +208,7 @@ def get_history_base(stock_no, max_count):
             current_date = (current_date.replace(day=1) - timedelta(days=1)).replace(
                 day=1
             )
-            time.sleep(1.0)
+            time.sleep(0.3)
         except:
             break
     return all_data
@@ -221,7 +222,7 @@ def get_realtime_info(stock_no):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Referer": "https://mis.twse.com.tw/stock/fibest.jsp",
         }
-        resp = requests.get(url, headers=headers, timeout=5)
+        resp = requests.get(url, headers=headers, timeout=5, verify=False)
         json_data = resp.json()
         if not json_data.get("msgArray"):
             return None
@@ -242,8 +243,7 @@ def get_realtime_info(stock_no):
             "time": info.get("t", ""),
             "sys_time": datetime.now().strftime("%H:%M:%S"),
         }
-    except Exception as e:
-        st.error(f"Realtime Error: {e}")
+    except:
         return None
 
 
