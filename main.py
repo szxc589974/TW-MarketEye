@@ -37,35 +37,66 @@ def check_login():
 check_login()
 st.set_page_config(page_title="台股 1-15 項極速監控", layout="wide")
 
+# st.markdown(
+#     """
+#     <style>
+#     [data-testid="stAppViewContainer"] { background-color: #000000; }
+#     .stock-up { color: #FF3333 !important; font-weight: bold; }
+#     .stock-down { color: #00FF00 !important; font-weight: bold; }
+#     .stock-none { color: #FFFFFF !important; }
+#     .highlight-gold { color: #FFD700 !important; font-weight: bold; } /* 線價比 5% 內 */
+#     .highlight-purple { color: #FF00FF !important; font-weight: bold; } /* 量增比 2倍以上 */
+#     .normal-white { color: #FFFFFF !important; }
+#     .custom-table {
+#         width: 100%; border-collapse: collapse; background-color: #111111; color: white; font-family: 'Consolas', monospace;
+#         margin-bottom: 20px;
+#     }
+#     .custom-table th { background-color: #003366; color: #FFFF00; padding: 10px; border: 1px solid #444; font-size: 14px; }
+#     .custom-table td { padding: 18px 10px; border: 1px solid #444; text-align: center; font-size: 22px; font-weight: bold; }
+#     </style>
+# """,
+#     unsafe_allow_html=True,
+# )
+# # 隱藏 Streamlit 預設的 Footer 浮水印
+# hide_streamlit_style = """
+#             <style>
+#             #MainMenu {visibility: hidden;}
+#             footer {visibility: hidden;}
+#             header {visibility: hidden;}
+#             </style>
+#             """
+# st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 st.markdown(
     """
     <style>
+    /* 1. 隱藏右上角選單、頂部裝飾條與底部文字 */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden !important;}
+
+    /* 2. 移除右下角紅色的 "Hosted with Streamlit" 標籤與按鈕 */
+    [data-testid="stStatusWidget"] {display: none !important;}
+    .viewerBadge_container__1QS1n {display: none !important;}
+    .stAppDeployButton {display: none !important;}
+    
+    /* 3. 你原本的股票表格樣式設定 */
     [data-testid="stAppViewContainer"] { background-color: #000000; }
     .stock-up { color: #FF3333 !important; font-weight: bold; }
     .stock-down { color: #00FF00 !important; font-weight: bold; }
     .stock-none { color: #FFFFFF !important; }
-    .highlight-gold { color: #FFD700 !important; font-weight: bold; } /* 線價比 5% 內 */
-    .highlight-purple { color: #FF00FF !important; font-weight: bold; } /* 量增比 2倍以上 */
+    .highlight-gold { color: #FFD700 !important; font-weight: bold; }
+    .highlight-purple { color: #FF00FF !important; font-weight: bold; }
     .normal-white { color: #FFFFFF !important; }
     .custom-table {
-        width: 100%; border-collapse: collapse; background-color: #111111; color: white; font-family: 'Consolas', monospace;
-        margin-bottom: 20px;
+        width: 100%; border-collapse: collapse; background-color: #111111; 
+        color: white; font-family: 'Consolas', monospace; margin-bottom: 20px;
     }
     .custom-table th { background-color: #003366; color: #FFFF00; padding: 10px; border: 1px solid #444; font-size: 14px; }
     .custom-table td { padding: 18px 10px; border: 1px solid #444; text-align: center; font-size: 22px; font-weight: bold; }
     </style>
-""",
+    """,
     unsafe_allow_html=True,
 )
-# 隱藏 Streamlit 預設的 Footer 浮水印
-hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 
 # --- 1. 初始化與連線 ---
