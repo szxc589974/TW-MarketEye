@@ -57,6 +57,15 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+# 隱藏 Streamlit 預設的 Footer 浮水印
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 
 # --- 1. 初始化與連線 ---
