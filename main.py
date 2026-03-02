@@ -180,6 +180,10 @@ def get_history_base(stock_no, max_count):
     now = datetime.now()
     current_date = now.replace(day=1)
     all_data = []
+    # 偽裝瀏覽器 Header，這對雲端執行至關重要
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
     while len(all_data) < max_count + 5:
         date_str = current_date.strftime("%Y%m%d")
         url = f"https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY?date={date_str}&stockNo={stock_no}&response=html"
@@ -203,7 +207,7 @@ def get_history_base(stock_no, max_count):
             current_date = (current_date.replace(day=1) - timedelta(days=1)).replace(
                 day=1
             )
-            time.sleep(0.3)
+            time.sleep(1.0)
         except:
             break
     return all_data
