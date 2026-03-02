@@ -1,1 +1,7 @@
 streamlit==1.53.0
+gspread
+oauth2client
+pandas
+requests
+beautifulsoup4
+streamlit-autorefresh

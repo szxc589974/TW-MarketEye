@@ -6,6 +6,7 @@ import pandas as pd
 import requests
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
+from streamlit_autorefresh import st_autorefresh
 
 
 # --- 0. 登入邏輯檢查 ---
@@ -368,63 +369,61 @@ print(f"all_stock:{all_stock}")
 # ======================
 # 5. 核心動態更新區域
 # ======================
-placeholder = st.empty()
+# placeholder = st.empty()
 
-while True:
-    with placeholder.container():
-        # 按照 all_class 列表順序取出群組
-        for group in all_class:
-            if group in all_stock:
-                st.markdown(f"## 📁 {group}")  # 顯示群組名稱標題
+st_autorefresh(interval=10000, key="datarefresh")
+# while True:
+# with placeholder.container():
+with st.container():
+    # 按照 all_class 列表順序取出群組
+    for group in all_class:
+        if group in all_stock:
+            st.markdown(f"## 📁 {group}")  # 顯示群組名稱標題
 
-                # 取出該群組內的所有股票設定
-                for config in all_stock[group]:
-                    user_stock, day_a, day_b, day_c = config
+            # 取出該群組內的所有股票設定
+            for config in all_stock[group]:
+                user_stock, day_a, day_b, day_c = config
 
-                    max_target = max(day_a, day_b, day_c)
-                    history_data = get_history_base(user_stock, max_target)
-                    realtime = get_realtime_info(user_stock)
+                max_target = max(day_a, day_b, day_c)
+                history_data = get_history_base(user_stock, max_target)
+                realtime = get_realtime_info(user_stock)
 
-                    if history_data and realtime:
-                        # --- 算法邏輯 (完全保留) ---
-                        prices = [item["收盤價"] for item in history_data]
-                        volumes = [item["成交股數"] / 1000 for item in history_data]
+                if history_data and realtime:
+                    # --- 算法邏輯 (完全保留) ---
+                    prices = [item["收盤價"] for item in history_data]
+                    volumes = [item["成交股數"] / 1000 for item in history_data]
 
-                        ma_daya = sum(prices[-day_a:]) / day_a
-                        ma_dayb = sum(prices[-day_b:]) / day_b
-                        ma_dayc = sum(prices[-day_c:]) / day_c
+                    ma_daya = sum(prices[-day_a:]) / day_a
+                    ma_dayb = sum(prices[-day_b:]) / day_b
+                    ma_dayc = sum(prices[-day_c:]) / day_c
 
-                        last_4_vol = sum(volumes[-4:])
-                        diff = realtime["price"] - realtime["yesterday_close"]
-                        diff_percent = (diff / realtime["yesterday_close"]) * 100
+                    last_4_vol = sum(volumes[-4:])
+                    diff = realtime["price"] - realtime["yesterday_close"]
+                    diff_percent = (diff / realtime["yesterday_close"]) * 100
 
-                        current_t = datetime.now().strftime("%H:%M")
-                        factor = get_est_factor(current_t)
-                        vol_lots = realtime["volume"] / 1000
-                        est_vol_lots = vol_lots * factor
-                        mv_custom = (est_vol_lots + last_4_vol) / 5
+                    current_t = datetime.now().strftime("%H:%M")
+                    factor = get_est_factor(current_t)
+                    vol_lots = realtime["volume"] / 1000
+                    est_vol_lots = vol_lots * factor
+                    mv_custom = (est_vol_lots + last_4_vol) / 5
 
-                        price_ma_diff = ((realtime["price"] - ma_daya) / ma_daya) * 100
-                        vol_ratio = (
-                            (est_vol_lots / mv_custom) * 100 if mv_custom > 0 else 0
-                        )
+                    price_ma_diff = ((realtime["price"] - ma_daya) / ma_daya) * 100
+                    vol_ratio = (est_vol_lots / mv_custom) * 100 if mv_custom > 0 else 0
 
-                        color_cls = (
-                            "stock-up"
-                            if diff > 0
-                            else "stock-down" if diff < 0 else "stock-none"
-                        )
-                        ma_diff_color = (
-                            "highlight-gold"
-                            if abs(price_ma_diff) <= 5
-                            else "normal-white"
-                        )
-                        vol_ratio_color = (
-                            "highlight-purple" if vol_ratio >= 200 else "normal-white"
-                        )
+                    color_cls = (
+                        "stock-up"
+                        if diff > 0
+                        else "stock-down" if diff < 0 else "stock-none"
+                    )
+                    ma_diff_color = (
+                        "highlight-gold" if abs(price_ma_diff) <= 5 else "normal-white"
+                    )
+                    vol_ratio_color = (
+                        "highlight-purple" if vol_ratio >= 200 else "normal-white"
+                    )
 
-                        # --- HTML 寫法 (照原本的，不多做結構改動) ---
-                        html_code = f"""
+                    # --- HTML 寫法 (照原本的，不多做結構改動) ---
+                    html_code = f"""
                         <table class="custom-table">
                             <thead>
                                 <tr>
@@ -450,14 +449,14 @@ while True:
                             </tbody>
                         </table>
                         """
-                        st.write(html_code, unsafe_allow_html=True)
-                    else:
-                        st.warning(f"正在抓取 {user_stock} 資料中...")
-        realtime = get_realtime_info(user_stock)
-        print("DEBUG:", user_stock, realtime)
-        st.markdown(
-            f'<div style="text-align: right; color: #888; font-size: 12px;">最後更新：{datetime.now().strftime("%H:%M:%S")}</div>',
-            unsafe_allow_html=True,
-        )
+                    st.write(html_code, unsafe_allow_html=True)
+                else:
+                    st.warning(f"正在抓取 {user_stock} 資料中...")
+    realtime = get_realtime_info(user_stock)
+    print("DEBUG:", user_stock, realtime)
+    st.markdown(
+        f'<div style="text-align: right; color: #888; font-size: 12px;">最後更新：{datetime.now().strftime("%H:%M:%S")}</div>',
+        unsafe_allow_html=True,
+    )
 
-    time.sleep(10)
+# time.sleep(10)
