@@ -242,7 +242,8 @@ def get_realtime_info(stock_no):
             "time": info.get("t", ""),
             "sys_time": datetime.now().strftime("%H:%M:%S"),
         }
-    except:
+    except Exception as e:
+        st.error(f"Realtime Error: {e}")
         return None
 
 
